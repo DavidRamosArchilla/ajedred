@@ -1,11 +1,13 @@
+from os import stat_result
 from flask import Flask,request,Response
 import chess
 
 app = Flask(__name__)
+board = chess.Board()
 
 @app.route('/')
 def play():
-    board = chess.Board()
+    
     board_to_html = board_html(board)
     return open("home.html").read()
 
@@ -40,5 +42,15 @@ def move():
     casilla_inicio = int(request.args.get('from'))
     casilla_destino = int(request.args.get('to'))
     promotion = request.args.get('promotion') == 'true'
-
-    chess.Move(casilla_inicio,casilla_destino,promotion= chess.QUEEN if promotion else None)
+   
+    movimiento = chess.Move(casilla_inicio,casilla_destino,promotion= chess.QUEEN if promotion else None)
+    if movimiento in board.legal_moves:
+        board.push(movimiento)
+        print(board)
+        if board.is_game_over():
+            print('game over')
+            return app.response_class(response = "game over",status=200) #app.response_class( response = "game over",status = 201)
+        else:
+            return app.response_class(response = board.fen(),status=200)
+    else:
+        return app.response_class(response = board.fen(),status=200)
