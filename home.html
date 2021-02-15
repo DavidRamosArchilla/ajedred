@@ -23,8 +23,7 @@
 var board = ChessBoard('board', {
   position: 'start',
   draggable: true,
-  onDrop: onDrop,
-  dropOffBoard: 'snapback'
+  onDrop: onDrop
 });
 
 var files = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7};
@@ -43,8 +42,8 @@ function onDrop(source, target, piece) {
     
     if (r.includes("game over")) {
       document.querySelector('p').innerText = 'game over';
-      //board.draggable = false;
-    } else {
+    }
+    else {
       document.querySelector('p').innerText = '';
       board.position(r);
     }

@@ -6,8 +6,6 @@ board = chess.Board()
 
 @app.route('/')
 def play():
-    
-    board_to_html = board_html(board)
     return open("home.html").read()
 
 #no lo uso
@@ -57,7 +55,7 @@ def move():
             return app.response_class(response = board.fen(),status=200)
     else:
         print(board)
-        return app.response_class(response = board.fen(),status=201)
+        return app.response_class(response = board.fen(),status=200)
 
 @app.route('/newgame')
 def new_game():
