@@ -23,7 +23,8 @@
 var board = ChessBoard('board', {
   position: 'start',
   draggable: true,
-  onDrop: onDrop
+  onDrop: onDrop,
+  dropOffBoard: 'snapback'
 });
 
 var files = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7};
@@ -33,13 +34,18 @@ function get_square(sq) {
 
 
 function onDrop(source, target, piece) {
-  if(source == target) return
+  console.log( get_square(target))
+  console.log(target)
+  if(source == target || isNaN(get_square(target)))
+   return 'snapback'
 
   var promotion = piece.toLowerCase().charAt(1) == 'p' && parseInt(target.charAt(1)) == 8;
 
-  $.get('/move_coordinates', {'from': get_square(source), 'to': get_square(target), 'promotion': promotion}, function(r) {
+  $.get('/move_coordinates', {'from': (source), 'to': (target), 'promotion': promotion}, function(r) {
+    
     if (r.includes("game over")) {
       document.querySelector('p').innerText = 'game over';
+      //board.draggable = false;
     } else {
       document.querySelector('p').innerText = '';
       board.position(r);

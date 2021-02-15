@@ -1,4 +1,3 @@
-from os import stat_result
 from flask import Flask,request,Response
 import chess
 
@@ -39,12 +38,16 @@ def board_html(board):
 
 @app.route('/move_coordinates')
 def move():
-    casilla_inicio = int(request.args.get('from'))
-    casilla_destino = int(request.args.get('to'))
+    casilla_inicio = request.args.get('from')
+    casilla_destino = request.args.get('to')
     promotion = request.args.get('promotion') == 'true'
-   
-    movimiento = chess.Move(casilla_inicio,casilla_destino,promotion= chess.QUEEN if promotion else None)
-    if movimiento in board.legal_moves:
+    movimiento_str = f'{casilla_inicio}{casilla_destino}'
+    # movimiento = chess.Move(casilla_inicio,casilla_destino,promotion= chess.QUEEN if promotion else None)
+    movimiento = chess.Move.from_uci(movimiento_str)
+    movimiento.promotion = chess.QUEEN if promotion else None
+    print(movimiento)
+    # print( chess.Move.from_uci(movimiento) in board.legal_moves)
+    if movimiento in (board.legal_moves):
         board.push(movimiento)
         print(board)
         if board.is_game_over():
@@ -53,4 +56,10 @@ def move():
         else:
             return app.response_class(response = board.fen(),status=200)
     else:
-        return app.response_class(response = board.fen(),status=200)
+        print(board)
+        return app.response_class(response = board.fen(),status=201)
+
+@app.route('/newgame')
+def new_game():
+    board.reset()
+    return app.response_class(response = chess.STARTING_BOARD_FEN)
