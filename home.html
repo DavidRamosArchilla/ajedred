@@ -34,12 +34,10 @@ function get_square(sq) {
 
 
 function onDrop(source, target, piece) {
-  console.log( get_square(target))
-  console.log(target)
   if(source == target || isNaN(get_square(target)))
    return 'snapback'
 
-  var promotion = piece.toLowerCase().charAt(1) == 'p' && parseInt(target.charAt(1)) == 8;
+  var promotion = (piece.toLowerCase().charAt(1) == 'p' && (parseInt(target.charAt(1)) == 8 || parseInt(target.charAt(1))==1));
 
   $.get('/move_coordinates', {'from': (source), 'to': (target), 'promotion': promotion}, function(r) {
     
