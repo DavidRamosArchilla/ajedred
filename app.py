@@ -1,6 +1,6 @@
 from flask import Flask,request,Response
 import chess
-
+from inteligencia import Ia
 app = Flask(__name__)
 board = chess.Board()
 
@@ -47,7 +47,10 @@ def move():
     # print( chess.Move.from_uci(movimiento) in board.legal_moves)
     if movimiento in (board.legal_moves):
         board.push(movimiento)
-        print(board)
+        ia = Ia(board)
+        ia_move = ia.best_move(3,chess.WHITE)
+        print(ia_move)
+        board.push(ia_move)
         if board.is_game_over():
             print('game over')
             return app.response_class(response = "game over",status=200) #app.response_class( response = "game over",status = 201)
