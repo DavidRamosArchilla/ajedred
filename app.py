@@ -48,8 +48,10 @@ def move():
     if movimiento in (board.legal_moves):
         board.push(movimiento)
         ia = Ia(board)
-        ia_move = ia.best_move(3,chess.BLACK)[1]
-        print(ia_move)
+        val,ia_move = ia.best_move(4,chess.BLACK,a=ia.MIN_VAL,b=ia.MAX_VAL)
+        print(ia_move, val)
+        print(ia.board.fen())
+        #TODO comprobar game_over
         board.push(ia_move)
         if board.is_game_over():
             print('game over')
@@ -57,7 +59,6 @@ def move():
         else:
             return app.response_class(response = board.fen(),status=200)
     else:
-        print(board)
         return app.response_class(response = board.fen(),status=200)
 
 @app.route('/newgame')
