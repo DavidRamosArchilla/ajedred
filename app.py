@@ -48,7 +48,7 @@ def move():
     if movimiento in (board.legal_moves):
         board.push(movimiento)
         ia = Ia(board)
-        ia_move = ia.best_move(3,chess.WHITE)
+        ia_move = ia.best_move(3,chess.BLACK)[1]
         print(ia_move)
         board.push(ia_move)
         if board.is_game_over():

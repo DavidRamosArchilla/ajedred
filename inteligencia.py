@@ -18,12 +18,12 @@ class Ia:
         value = 0
         for k,piece in self.board.piece_map().items():
             if piece.color == chess.WHITE: #si chess.WHITE: chess.Color= True; chess.BLACK: chess.Color= False
-                value += self.value_pieces[piece]
+                value += self.value_pieces[piece.piece_type]
             else:
-                value -= self.value_pieces[piece]
+                value -= self.value_pieces[piece.piece_type]
         return value
 
-    def best_move(self,profundidad,player):
+    def best_move(self,profundidad,player):# TODO implementar poda alfa beta
         # la ia es blancas, se escoge el mejor movimiento para negras
         if self.board.is_game_over():
             result = self.board.result()
