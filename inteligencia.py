@@ -6,21 +6,78 @@ class Ia:
     def __init__(self, board):
         self.board = board
         self.value_pieces = {
-            chess.PAWN: 1,
-            chess.KNIGHT: 3,
-            chess.BISHOP: 3,
-            chess.ROOK: 5,
-            chess.QUEEN: 9,
-            chess.KING: 0
+            chess.PAWN: 100,
+            chess.KNIGHT: 320,
+            chess.BISHOP: 330,
+            chess.ROOK: 500,
+            chess.QUEEN: 900,
+            chess.KING: 20000
         }
+        self.movility_bonus = {#para negras hay que hacer movility_bonus[piece][63-casilla]
+            chess.PAWN: [ 0,  0,  0,  0,  0,  0,  0,  0,
+                          5, 10, 10,-20,-20, 10, 10,  5,
+                          5, -5,-10,  0,  0,-10, -5,  5,
+                          0,  0,  0, 20, 20,  0,  0,  0,
+                          5,  5, 10, 25, 25, 10,  5,  5,
+                          10, 10, 20, 30, 30, 20, 10, 10,
+                          50, 50, 50, 50, 50, 50, 50, 50,
+                          0,  0,  0,  0,  0,  0,  0,  0
+                         ],
+            chess.KNIGHT: [-50,-40,-30,-30,-30,-30,-40,-50,
+                            -40,-20,  0,  5,  5,  0,-20,-40,
+                            -30,  5, 10, 15, 15, 10,  5,-30,
+                            -30,  0, 15, 20, 20, 15,  0,-30,
+                            -30,  5, 15, 20, 20, 15,  5,-30,
+                            -30,  0, 10, 15, 15, 10,  0,-30,
+                            -40,-20,  0,  0,  0,  0,-20,-40,
+                            -50,-40,-30,-30,-30,-30,-40,-50
+                            ],
+            chess.BISHOP: [-20,-10,-10,-10,-10,-10,-10,-20,
+                            -10,  5,  0,  0,  0,  0,  5,-10,
+                            -10, 10, 10, 10, 10, 10, 10,-10,
+                            -10,  0, 10, 10, 10, 10,  0,-10,
+                            -10,  5,  5, 10, 10,  5,  5,-10,
+                            -10,  0,  5, 10, 10,  5,  0,-10,
+                            -10,  0,  0,  0,  0,  0,  0,-10,
+                            -20,-10,-10,-10,-10,-10,-10,-20
+                            ],
+            chess.ROOK: [0,  0,  0,  5,  5,  0,  0,  0,
+                        -5,  0,  0,  0,  0,  0,  0, -5,
+                        -5,  0,  0,  0,  0,  0,  0, -5,
+                        -5,  0,  0,  0,  0,  0,  0, -5,
+                        -5,  0,  0,  0,  0,  0,  0, -5,
+                        -5,  0,  0,  0,  0,  0,  0, -5,
+                        5, 10, 10, 10, 10, 10, 10,  5,
+                        0,  0,  0,  0,  0,  0,  0,  0
+                        ],
+            chess.QUEEN: [-20,-10,-10, -5, -5,-10,-10,-20,
+                        -10,  0,  5,  0,  0,  0,  0,-10,
+                        -10,  5,  5,  5,  5,  5,  0,-10,
+                          0,  0,  5,  5,  5,  5,  0, -5,
+                          -5,  0,  5,  5,  5,  5,  0, -5,
+                          -10,  0,  5,  5,  5,  5,  0,-10,
+                          -10,  0,  0,  0,  0,  0,  0,-10,
+                          -20,-10,-10, -5, -5,-10,-10,-20
+                        ],
+            chess.KING: [20, 30, 10,  0,  0, 10, 30, 20,
+                        20, 20,  0,  0,  0,  0, 20, 20,
+                        -10,-20,-20,-20,-20,-20,-20,-10,
+                        -20,-30,-30,-40,-40,-30,-30,-20,
+                        -30,-40,-40,-50,-50,-40,-40,-30,
+                        -30,-40,-40,-50,-50,-40,-40,-30,
+                        -30,-40,-40,-50,-50,-40,-40,-30,
+                        -30,-40,-40,-50,-50,-40,-40,-30
+                        ]
+        }
+        
 
     def evaluate_pos(self):
         value = 0
-        for k,piece in self.board.piece_map().items():
+        for square,piece in self.board.piece_map().items():
             if piece.color == chess.WHITE: #si chess.WHITE: chess.Color= True; chess.BLACK: chess.Color= False
-                value -= self.value_pieces[piece.piece_type]
+                value -= self.value_pieces[piece.piece_type] - self.movility_bonus[piece.piece_type][square]
             else:
-                value += self.value_pieces[piece.piece_type]
+                value += self.value_pieces[piece.piece_type] + self.movility_bonus[piece.piece_type][63-square]
         return value
 
     def best_move(self,profundidad,player,a,b):# TODO implementar poda alfa beta
@@ -36,8 +93,9 @@ class Ia:
         elif profundidad ==0 :
             return self.evaluate_pos(),None
         else:
-            moves = list(self.board.legal_moves)
+            
             if player == chess.BLACK:
+                moves = list(self.board.legal_moves)
                 best_move_white = None
                 best_board = self.MIN_VAL
                 board_eval = self.MIN_VAL
@@ -53,6 +111,7 @@ class Ia:
                         break
                 return best_board,best_move_white
             else:
+                moves = list(self.board.legal_moves)
                 best_move_black = None
                 # best_board = self.MAX_VAL
                 board_eval2 = self.MAX_VAL
