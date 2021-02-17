@@ -65,3 +65,6 @@ def move():
 def new_game():
     board.reset()
     return app.response_class(response = chess.STARTING_BOARD_FEN)
+
+if __name__ == '__main__':
+    app.run()
