@@ -1,4 +1,5 @@
 import chess
+import numpy as np
 
 class Ia:
     MAX_VAL = 1000000
@@ -14,43 +15,43 @@ class Ia:
             chess.KING: 20000
         }
         self.movility_bonus = {#para negras hay que hacer movility_bonus[piece][63-casilla]
-            chess.PAWN: [ 0,  0,  0,  0,  0,  0,  0,  0,
+            chess.PAWN: np.array( (0,  0,  0,  0,  0,  0,  0,  0,
                           5, 10, 10,-20,-20, 10, 10,  5,
                           5, -5,-10,  0,  0,-10, -5,  5,
                           0,  0,  0, 20, 20,  0,  0,  0,
                           5,  5, 10, 25, 25, 10,  5,  5,
                           10, 10, 20, 30, 30, 20, 10, 10,
                           50, 50, 50, 50, 50, 50, 50, 50,
-                          0,  0,  0,  0,  0,  0,  0,  0
-                         ],
-            chess.KNIGHT: [-50,-40,-30,-30,-30,-30,-40,-50,
+                          0,  0,  0,  0,  0,  0,  0,  0)
+            ),
+            chess.KNIGHT: np.array((-50,-40,-30,-30,-30,-30,-40,-50,
                             -40,-20,  0,  5,  5,  0,-20,-40,
                             -30,  5, 10, 15, 15, 10,  5,-30,
                             -30,  0, 15, 20, 20, 15,  0,-30,
                             -30,  5, 15, 20, 20, 15,  5,-30,
                             -30,  0, 10, 15, 15, 10,  0,-30,
                             -40,-20,  0,  0,  0,  0,-20,-40,
-                            -50,-40,-30,-30,-30,-30,-40,-50
-                            ],
-            chess.BISHOP: [-20,-10,-10,-10,-10,-10,-10,-20,
+                            -50,-40,-30,-30,-30,-30,-40,-50)
+            ),
+            chess.BISHOP: np.array((-20,-10,-10,-10,-10,-10,-10,-20,
                             -10,  5,  0,  0,  0,  0,  5,-10,
                             -10, 10, 10, 10, 10, 10, 10,-10,
                             -10,  0, 10, 10, 10, 10,  0,-10,
                             -10,  5,  5, 10, 10,  5,  5,-10,
                             -10,  0,  5, 10, 10,  5,  0,-10,
                             -10,  0,  0,  0,  0,  0,  0,-10,
-                            -20,-10,-10,-10,-10,-10,-10,-20
-                            ],
-            chess.ROOK: [0,  0,  0,  5,  5,  0,  0,  0,
+                            -20,-10,-10,-10,-10,-10,-10,-20)
+            ),
+            chess.ROOK: np.array((0,  0,  0,  5,  5,  0,  0,  0,
                         -5,  0,  0,  0,  0,  0,  0, -5,
                         -5,  0,  0,  0,  0,  0,  0, -5,
                         -5,  0,  0,  0,  0,  0,  0, -5,
                         -5,  0,  0,  0,  0,  0,  0, -5,
                         -5,  0,  0,  0,  0,  0,  0, -5,
                         5, 10, 10, 10, 10, 10, 10,  5,
-                        0,  0,  0,  0,  0,  0,  0,  0
-                        ],
-            chess.QUEEN: [-20,-10,-10, -5, -5,-10,-10,-20,
+                        0,  0,  0,  0,  0,  0,  0,  0)
+            ),
+            chess.QUEEN: np.array((-20,-10,-10, -5, -5,-10,-10,-20,
                         -10,  0,  5,  0,  0,  0,  0,-10,
                         -10,  5,  5,  5,  5,  5,  0,-10,
                           0,  0,  5,  5,  5,  5,  0, -5,
@@ -58,16 +59,16 @@ class Ia:
                           -10,  0,  5,  5,  5,  5,  0,-10,
                           -10,  0,  0,  0,  0,  0,  0,-10,
                           -20,-10,-10, -5, -5,-10,-10,-20
-                        ],
-            chess.KING: [20, 30, 10,  0,  0, 10, 30, 20,
+            )),
+            chess.KING: np.array((20, 30, 10,  0,  0, 10, 30, 20,
                         20, 20,  0,  0,  0,  0, 20, 20,
                         -10,-20,-20,-20,-20,-20,-20,-10,
                         -20,-30,-30,-40,-40,-30,-30,-20,
                         -30,-40,-40,-50,-50,-40,-40,-30,
                         -30,-40,-40,-50,-50,-40,-40,-30,
                         -30,-40,-40,-50,-50,-40,-40,-30,
-                        -30,-40,-40,-50,-50,-40,-40,-30
-                        ]
+                        -30,-40,-40,-50,-50,-40,-40,-30)
+            )
         }
         
 
@@ -82,7 +83,10 @@ class Ia:
 
     def best_move(self,profundidad,player,a,b):# TODO implementar poda alfa beta
         # la ia es negras, se escoge el mejor movimiento para negras
-        if self.board.is_game_over():
+        if profundidad ==0 :
+            return self.evaluate_pos(),None
+
+        elif self.board.is_game_over():
             result = self.board.result()
             if result == '1-0':
                 return self.MIN_VAL,None
@@ -90,32 +94,27 @@ class Ia:
                 return self.MAX_VAL,None
             elif result == '1/2-1/2':
                 return 0,None
-        elif profundidad ==0 :
-            return self.evaluate_pos(),None
-        else:
-            
+        else:       
             if player == chess.BLACK:
-                moves = list(self.board.legal_moves)
                 best_move_white = None
-                best_board = self.MIN_VAL
+                best_board = self.MIN_VAL-1
                 board_eval = self.MIN_VAL
-                for move in moves:
+                for move in self.board.legal_moves:
                     self.board.push(move)
                     board_eval = max(board_eval,self.best_move(profundidad-1,chess.WHITE,a,b)[0])
                     self.board.pop()
                     a = max(a,board_eval)
-                    if board_eval >best_board :
+                    if board_eval > best_board :
                         best_board = board_eval
                         best_move_white = move
                     if a>=b:
                         break
                 return best_board,best_move_white
             else:
-                moves = list(self.board.legal_moves)
                 best_move_black = None
                 # best_board = self.MAX_VAL
                 board_eval2 = self.MAX_VAL
-                for move in moves:
+                for move in self.board.legal_moves:
                     self.board.push(move)
                     board_eval2 = min(board_eval2,self.best_move(profundidad-1,chess.BLACK,a,b)[0])
                     self.board.pop()

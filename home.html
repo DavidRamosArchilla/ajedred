@@ -38,10 +38,11 @@ function onDrop(source, target, piece) {
 
   var promotion = (piece.toLowerCase().charAt(1) == 'p' && (parseInt(target.charAt(1)) == 8 || parseInt(target.charAt(1))==1));
 
-  $.get('/move_coordinates', {'from': (source), 'to': (target), 'promotion': promotion}, function(r) {
-    
-    if (r.includes("game over")) {
+  $.get('/move_coordinates', {'from': (source), 'to': (target), 'promotion': promotion}, function(r,text,request) {
+    console.log(request.getResponseHeader('game_over'));
+    if (request.getResponseHeader('game_over')) {
       document.querySelector('p').innerText = 'game over';
+      board.position(r);
     }
     else {
       document.querySelector('p').innerText = '';

@@ -47,19 +47,25 @@ def move():
     # print( chess.Move.from_uci(movimiento) in board.legal_moves)
     if movimiento in (board.legal_moves):
         board.push(movimiento)
-        ia = Ia(board)
-        val,ia_move = ia.best_move(4,chess.BLACK,a=ia.MIN_VAL,b=ia.MAX_VAL)
-        print(ia_move, val)
-        print(ia.board.fen())
-        #TODO comprobar game_over
-        board.push(ia_move)
+        ia_move = mueve_ia()
+        if not ia_move:
+            return app.response_class(response = "game over",status=200,headers = {'game_over':True})
+        else:
+            board.push(ia_move)
         if board.is_game_over():
             print('game over')
-            return app.response_class(response = "game over",status=200) #app.response_class( response = "game over",status = 201)
+            return app.response_class(response = "game over",status=200,headers = {'game_over':True}) #app.response_class( response = "game over",status = 201)
         else:
-            return app.response_class(response = board.fen(),status=200)
+            return app.response_class(response = board.fen(),status=200,headers={'game_over':False})
     else:
         return app.response_class(response = board.fen(),status=200)
+
+def mueve_ia():
+    ia = Ia(board)
+    val,ia_move = ia.best_move(4,chess.BLACK,a=ia.MIN_VAL,b=ia.MAX_VAL)
+    print(ia_move, val)
+    
+    return ia_move
 
 @app.route('/newgame')
 def new_game():
