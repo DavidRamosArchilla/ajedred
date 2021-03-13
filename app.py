@@ -62,7 +62,8 @@ def move():
 
 def mueve_ia():
     ia = Ia(board)
-    val,ia_move = ia.best_move(4,chess.BLACK,a=ia.MIN_VAL,b=ia.MAX_VAL)
+    # val,ia_move = ia.best_move(4,chess.BLACK,a=ia.MIN_VAL,b=ia.MAX_VAL)
+    val,ia_move = ia.best_move_negascout(4,chess.BLACK,ia.MIN_VAL,ia.MAX_VAL)
     print(ia_move, val)
     
     return ia_move

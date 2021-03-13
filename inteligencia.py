@@ -83,7 +83,7 @@ class Ia:
                 value += self.value_pieces[piece.piece_type] + self.movility_bonus[piece.piece_type][63-square]
         return value
 
-    def best_move(self,profundidad,player,a,b):# TODO implementar poda alfa beta
+    def best_move(self,profundidad,player,a,b):
         
         # la ia es negras, se escoge el mejor movimiento para negras
         if profundidad ==0 :
@@ -114,7 +114,7 @@ class Ia:
                         board_eval = self.transp_table[self.board.fen()]
                     else:
                         board_eval = max(board_eval,self.best_move(profundidad-1,chess.WHITE,a,b)[0])
-                        self.transp_table[self.board.fen()] = board_eval
+                        #self.transp_table[self.board.fen()] = board_eval
                     self.board.pop()
                     a = max(a,board_eval)
                     if board_eval > best_board :
@@ -133,12 +133,56 @@ class Ia:
                         board_eval2 = self.transp_table[self.board.fen()]
                     else:
                         board_eval2 = min(board_eval2,self.best_move(profundidad-1,chess.BLACK,a,b)[0])
-                        self.transp_table[self.board.fen()] = board_eval2
+                        #self.transp_table[self.board.fen()] = board_eval2
                     self.board.pop()
                     b = min(b,board_eval2)
                     if a>=b:
                         break
                 return board_eval2,best_move_black
+    
+    def best_move_negascout(self,profundidad,player,alpha,beta):
+        if profundidad ==0 :
+            evaluation = self.evaluate_pos()
+            # self.transp_table[self.board.fen()] = evaluation
+            return evaluation,None
+        # elif self.board.is_game_over():
+        #     result = self.board.result()
+        #     if result == '1-0':
+        #         self.transp_table[self.board.fen()] = self.MIN_VAL
+        #         return self.MIN_VAL,None
+        #     elif result == '0-1':
+        #         self.transp_table[self.board.fen()] = self.MAX_VAL
+        #         return self.MAX_VAL,None
+        #     elif result == '1/2-1/2':
+        #         self.transp_table[self.board.fen()] = 0
+        #         return 0,None
+        else:
+            b = beta
+            best_move = None
+            for move in self.board.legal_moves:
+                try:
+                    self.board.push(move)
+                except:
+                    continue
+                a = - self.best_move_negascout(profundidad-1,not player,-b,-alpha)[0]
+                
+                if a>alpha: 
+                    alpha = a
+                    best_move = move
+                if alpha>= beta :
+                    self.board.pop()
+                    return a,best_move
+                if alpha>=b:
+                    alpha = - self.best_move_negascout(profundidad-1,not player,-beta,-alpha)[0]
+                    self.board.pop()
+                    if alpha>=beta:
+                        return alpha, move
+                else:
+                    self.board.pop()
+                b = alpha + 1
+            return alpha,best_move
+                
+
 # board = chess.Board()
 # board.set_fen('1rbqkr2/ppppppbp/8/3B4/4P3/8/PPPP1P1P/RNBQK1NR')
 # ia= Ia(board)
