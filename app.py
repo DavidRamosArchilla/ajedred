@@ -39,7 +39,7 @@ def move():
     casilla_inicio = request.args.get('from')
     casilla_destino = request.args.get('to')
     promotion = request.args.get('promotion') == 'true'
-    movimiento_str = f'{casilla_inicio}{casilla_destino}'
+    movimiento_str = str(casilla_inicio) + str(casilla_destino)
     # movimiento = chess.Move(casilla_inicio,casilla_destino,promotion= chess.QUEEN if promotion else None)
     movimiento = chess.Move.from_uci(movimiento_str)
     movimiento.promotion = chess.QUEEN if promotion else None
