@@ -88,19 +88,19 @@ class Ia:
         # la ia es negras, se escoge el mejor movimiento para negras
         if profundidad ==0 :
             evaluation = self.evaluate_pos()
-            self.transp_table[self.board.fen()] = evaluation
+            self.transp_table[self.board.board_fen()] = evaluation
             return evaluation,None
 
         elif self.board.is_game_over():
             result = self.board.result()
             if result == '1-0':
-                self.transp_table[self.board.fen()] = self.MIN_VAL
+                self.transp_table[self.board.board_fen()] = self.MIN_VAL
                 return self.MIN_VAL,None
             elif result == '0-1':
-                self.transp_table[self.board.fen()] = self.MAX_VAL
+                self.transp_table[self.board.board_fen()] = self.MAX_VAL
                 return self.MAX_VAL,None
             elif result == '1/2-1/2':
-                self.transp_table[self.board.fen()] = 0
+                self.transp_table[self.board.board_fen()] = 0
                 return 0,None
         else:       
             if player == chess.BLACK:
@@ -110,11 +110,11 @@ class Ia:
                 for move in self.board.legal_moves:
                     self.board.push(move)
                     #check if the state is on the table
-                    if self.board.fen() in self.transp_table:
-                        board_eval = self.transp_table[self.board.fen()]
+                    if self.board.board_fen() in self.transp_table:
+                        board_eval = self.transp_table[self.board.board_fen()]
                     else:
                         board_eval = max(board_eval,self.best_move(profundidad-1,chess.WHITE,a,b)[0])
-                        #self.transp_table[self.board.fen()] = board_eval
+                        #self.transp_table[self.board.board_fen()] = board_eval
                     self.board.pop()
                     a = max(a,board_eval)
                     if board_eval > best_board :
@@ -129,11 +129,11 @@ class Ia:
                 board_eval2 = self.MAX_VAL
                 for move in self.board.legal_moves:
                     self.board.push(move)
-                    if self.board.fen() in self.transp_table:
-                        board_eval2 = self.transp_table[self.board.fen()]
+                    if self.board.board_fen() in self.transp_table:
+                        board_eval2 = self.transp_table[self.board.board_fen()]
                     else:
                         board_eval2 = min(board_eval2,self.best_move(profundidad-1,chess.BLACK,a,b)[0])
-                        #self.transp_table[self.board.fen()] = board_eval2
+                        #self.transp_table[self.board.board_fen()] = board_eval2
                     self.board.pop()
                     b = min(b,board_eval2)
                     if a>=b:
@@ -143,18 +143,18 @@ class Ia:
     def best_move_negascout(self,profundidad,player,alpha,beta):
         if profundidad ==0 :
             evaluation = self.evaluate_pos()
-            # self.transp_table[self.board.fen()] = evaluation
+            # self.transp_table[self.board.board_fen()] = evaluation
             return evaluation,None
         # elif self.board.is_game_over():
         #     result = self.board.result()
         #     if result == '1-0':
-        #         self.transp_table[self.board.fen()] = self.MIN_VAL
+        #         self.transp_table[self.board.board_fen()] = self.MIN_VAL
         #         return self.MIN_VAL,None
         #     elif result == '0-1':
-        #         self.transp_table[self.board.fen()] = self.MAX_VAL
+        #         self.transp_table[self.board.board_fen()] = self.MAX_VAL
         #         return self.MAX_VAL,None
         #     elif result == '1/2-1/2':
-        #         self.transp_table[self.board.fen()] = 0
+        #         self.transp_table[self.board.board_fen()] = 0
         #         return 0,None
         else:
             b = beta
@@ -184,6 +184,6 @@ class Ia:
                 
 
 # board = chess.Board()
-# board.set_fen('1rbqkr2/ppppppbp/8/3B4/4P3/8/PPPP1P1P/RNBQK1NR')
+# board.set_board_fen('1rbqkr2/ppppppbp/8/3B4/4P3/8/PPPP1P1P/RNBQK1NR')
 # ia= Ia(board)
 # print(ia.evaluate_pos())
