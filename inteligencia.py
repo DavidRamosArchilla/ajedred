@@ -75,7 +75,7 @@ class Ia:
         }
         self.transp_table = {}
         
-
+ 
     def evaluate_pos(self):
         value = 0
         for square,piece in self.board.piece_map().items():
