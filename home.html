@@ -14,33 +14,25 @@
 
 <a href="/selfplay">Play vs itself</a>
 <button onclick="newGame()">new game</button><br/>
-<div id="board" style="width: 600px"></div>
+<button onclick="play(1)">play as white</button><br/>
+<button onclick="play(0)">play as black</button><br/>
+<div id="board" style="width: 600px; visibility: hidden;"></div>
 <p></p>
 
 
 <script type="text/javascript">
+var iaColor;
+var board;
 
-var board = ChessBoard('board', {
-  position: 'start',
-  draggable: true,
-  onDrop: onDrop
-});
-
-var files = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7};
-function get_square(sq) {
-  return 8*(parseInt(sq.charAt(1)) - 1) + files[sq.charAt(0)];
-}
-
-
-function onDrop(source, target, piece) {
+function onDrop(source, target, piece, newPos, oldPos, orientation) {
   if(source == target || isNaN(get_square(target)))
    return 'snapback'
 
   var promotion = (piece.toLowerCase().charAt(1) == 'p' && (parseInt(target.charAt(1)) == 8 || parseInt(target.charAt(1))==1));
 
-  $.get('/move_coordinates', {'from': (source), 'to': (target), 'promotion': promotion}, function(r,text,request) {
+  $.get('/move_coordinates', {'from': (source), 'to': (target), 'promotion': promotion, 'color': iaColor, 'isFirst': 'False'}, function(r,text,request) {
     console.log(request.getResponseHeader('game_over'));
-    if (request.getResponseHeader('game_over')) {
+    if (request.getResponseHeader('game_over') == true) {
       document.querySelector('p').innerText = 'game over';
       board.position(r);
     }
@@ -51,11 +43,42 @@ function onDrop(source, target, piece) {
   });
 }
 
+
+var files = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7};
+function get_square(sq) {
+  return 8*(parseInt(sq.charAt(1)) - 1) + files[sq.charAt(0)];
+}
+
+
+
 function newGame() {
   $.get('/newgame', function(r) {
     document.querySelector('p').innerText = '';
     board.position(r);
   });
+}
+
+
+function play(color){
+  // TODO: hacer invisibles los botones de iniciar partida y visibles de nuevo cuando haya game over
+  var boardDiv = document.getElementById("board")
+  boardDiv.style.visibility = 'visible';
+  var iaColor = color;
+  var orienation = 'black';
+  if (color)
+    orienation = 'white'
+  board = ChessBoard('board', {
+            position: 'start',
+            draggable: true,
+            onDrop: onDrop,
+            orientation: orienation
+          });
+  document.getElementsByTagName('body')[0].style.backgroundColor = "grey";
+  if (!color)
+    $.get('/move_coordinates', {'from': '', 'to': '', 'promotion': '', 'color': iaColor, 'isFirst': 'True'},  function(r) {
+      document.querySelector('p').innerText = '';
+      board.position(r);
+    })
 }
 </script>
 
