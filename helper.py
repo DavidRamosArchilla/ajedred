@@ -1,5 +1,8 @@
-from tensorflow.keras.models import load_model 
-import tfdeploy as td
+try: 
+	from tensorflow.keras.models import load_model 	
+	import tfdeploy as td
+except Exception as e:
+	print(e)
 import pickle
 import numpy as np
 

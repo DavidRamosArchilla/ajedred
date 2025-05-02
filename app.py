@@ -6,7 +6,7 @@ board = chess.Board()
 
 @app.route('/')
 def play():
-    return open("home.html").read()
+    return open("index.html").read()
 
 #no lo uso
 def board_to_string(board):

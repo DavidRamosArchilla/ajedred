@@ -15,7 +15,7 @@ class Ia:
             chess.QUEEN: 900,
             chess.KING: 20000
         }
-        self.model = load()
+#        self.model = load()
         self.movility_bonus = {#para negras hay que hacer movility_bonus[piece][63-casilla]
             chess.PAWN: np.array( (0,  0,  0,  0,  0,  0,  0,  0,
                           5, 10, 10,-20,-20, 10, 10,  5,
