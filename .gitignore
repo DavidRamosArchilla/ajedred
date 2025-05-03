@@ -3,3 +3,8 @@
 *.pyc
 *.h5
 *.pkl
+__pycache__
+.vscode
+.ipynb_checkpoints
+.pgn
+venv
